@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@near-js/iframe-rpc": "^0.0.2",
+    "@near-wallet-selector/core": "^8.9.5",
+    "firebase": "^10.8.1",
+    "near-fastauth-wallet": "^0.0.12"
+  }
+}
