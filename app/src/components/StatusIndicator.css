@@ -1,0 +1,57 @@
+/* Status Indicator Styles */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.status-indicator.small {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.status-indicator.medium {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.status-indicator.large {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+}
+
+.status-icon {
+  font-size: 1.2em;
+  animation: pulse 2s infinite;
+}
+
+.status-text {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .status-indicator {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .status-indicator.large {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
