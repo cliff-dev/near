@@ -3,6 +3,9 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import { setupWalletSelector } from '@near-wallet-selector/core';
 import { setupFastAuthWallet } from 'near-fastauth-wallet';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSpinner from './components/LoadingSpinner';
+import { validateEmail, formatErrorMessage, getStatusColor, logWalletOperation } from './utils/walletUtils';
 import './App.css';
 
 // Configuration constants
@@ -72,8 +75,14 @@ function App() {
       return;
     }
 
+    if (!validateEmail(userEmail)) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
     setIsConnecting(true);
     setConnectionStatus('connecting');
+    logWalletOperation('signIn', { email: userEmail });
 
     try {
       const fastAuthWallet = await walletSelector.wallet('fast-auth-wallet');
@@ -85,11 +94,12 @@ function App() {
       });
 
       setConnectionStatus('connected');
-      console.log('Successfully signed in with NEAR FastAuth');
+      logWalletOperation('signInSuccess', { email: userEmail });
     } catch (error) {
       console.error('Authentication failed:', error);
       setConnectionStatus('error');
-      alert('Authentication failed. Please check your credentials and try again.');
+      const errorMessage = formatErrorMessage(error);
+      alert(errorMessage);
     } finally {
       setIsConnecting(false);
     }
@@ -102,22 +112,13 @@ function App() {
     setUserEmail(event.target.value);
   };
 
-  /**
-   * Get status badge color based on connection status
-   */
-  const getStatusColor = () => {
-    switch (connectionStatus) {
-      case 'connected': return '#4CAF50';
-      case 'connecting': return '#FF9800';
-      case 'error': return '#F44336';
-      case 'ready': return '#2196F3';
-      default: return '#9E9E9E';
-    }
-  };
+  // Use utility function for status color
+  const statusColor = getStatusColor(connectionStatus);
 
   return (
-    <div className="app-container">
-      <header className="app-header">
+    <ErrorBoundary>
+      <div className="app-container">
+        <header className="app-header">
         <div className="logo-section">
           <img 
             src={reactLogo} 
@@ -133,7 +134,7 @@ function App() {
         <div className="status-section">
           <div 
             className="status-badge"
-            style={{ backgroundColor: getStatusColor() }}
+            style={{ backgroundColor: statusColor }}
           >
             Status: {connectionStatus}
           </div>
@@ -188,15 +189,22 @@ function App() {
         </div>
       )}
 
-      <footer className="app-footer">
-        <p>
-          Built with ❤️ for the NEAR ecosystem | 
-          <a href="https://near.org" target="_blank" rel="noopener noreferrer">
-            Learn more about NEAR
-          </a>
-        </p>
-      </footer>
-    </div>
+        <footer className="app-footer">
+          <p>
+            Built with ❤️ for the NEAR ecosystem | 
+            <a href="https://near.org" target="_blank" rel="noopener noreferrer">
+              Learn more about NEAR
+            </a>
+          </p>
+        </footer>
+
+        <LoadingSpinner 
+          isLoading={isConnecting}
+          message="Connecting to NEAR wallet..."
+          size="medium"
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 
